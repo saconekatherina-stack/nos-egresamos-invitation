@@ -81,12 +81,12 @@ function Uploader() {
 
   async function upload() {
     const last = Number(localStorage.getItem("ph_last") ?? 0);
-    if (Date.now() - last < 60_000) return toast.error("Esperá un minuto antes de enviar más fotos.");
+    if (Date.now() - last < 60_000) return void toast.error("Esperá un minuto antes de enviar más fotos.");
     let ok = 0;
     try {
       for (let i = 0; i < files.length; i++) {
         setProgress(`Subiendo ${i + 1} de ${files.length}…`);
-        const blob = await compressImage(files[i]);
+        const blob = await compressImage(files[i]!);
         const path = `${crypto.randomUUID()}.jpg`;
         const { error: upErr } = await supabase.storage.from("photos").upload(path, blob, { contentType: "image/jpeg", upsert: false });
         if (upErr) throw new Error("No pudimos subir la foto.");

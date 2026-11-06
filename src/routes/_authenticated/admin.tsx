@@ -111,13 +111,13 @@ function SettingsEditor() {
   useEffect(() => { if (data) setForm(data); }, [data]);
 
   async function save() {
-    if (form.maps_url && !/^https:\/\//.test(form.maps_url)) return toast.error("El enlace de Maps debe empezar con https://");
+    if (form.maps_url && !/^https:\/\//.test(form.maps_url)) return void toast.error("El enlace de Maps debe empezar con https://");
     setSaving(true);
     const { id: _id, updated_at: _u, ...rest } = form as InvitationSettings;
     const clean = Object.fromEntries(Object.entries(rest).map(([k, v]) => [k, typeof v === "string" && v.trim() === "" ? null : v]));
     const { error } = await supabase.from("invitation_settings").update({ ...clean, updated_at: new Date().toISOString() }).eq("id", 1);
     setSaving(false);
-    if (error) return toast.error("No se pudo guardar. Revisá que los campos obligatorios no estén vacíos.");
+    if (error) return void toast.error("No se pudo guardar. Revisá que los campos obligatorios no estén vacíos.");
     toast.success("Cambios guardados");
     qc.invalidateQueries({ queryKey: settingsQuery.queryKey });
   }
@@ -160,7 +160,7 @@ function MessagesAdmin() {
   async function remove(id: string) {
     if (!confirm("¿Eliminar este mensaje?")) return;
     const { error } = await supabase.from("guest_messages").delete().eq("id", id);
-    if (error) return toast.error("No se pudo eliminar.");
+    if (error) return void toast.error("No se pudo eliminar.");
     toast.success("Mensaje eliminado");
     qc.invalidateQueries({ queryKey: ["admin-messages"] });
   }
@@ -200,16 +200,16 @@ function PhotosAdmin() {
 
   async function approve(id: string) {
     const { error } = await supabase.from("photos").update({ status: "approved" }).eq("id", id);
-    if (error) return toast.error("No se pudo aprobar.");
+    if (error) return void toast.error("No se pudo aprobar.");
     toast.success("Foto publicada");
     refresh();
   }
   async function remove(id: string, path: string, label: string) {
     if (!confirm(`¿${label} esta foto? Se borrará definitivamente.`)) return;
     const { error: se } = await supabase.storage.from("photos").remove([path]);
-    if (se) return toast.error("No se pudo borrar el archivo.");
+    if (se) return void toast.error("No se pudo borrar el archivo.");
     const { error } = await supabase.from("photos").delete().eq("id", id);
-    if (error) return toast.error("No se pudo eliminar.");
+    if (error) return void toast.error("No se pudo eliminar.");
     toast.success("Foto eliminada");
     refresh();
   }
