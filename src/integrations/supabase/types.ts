@@ -14,16 +14,150 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      guest_messages: {
+        Row: {
+          author_name: string
+          created_at: string
+          id: string
+          message: string
+        }
+        Insert: {
+          author_name: string
+          created_at?: string
+          id?: string
+          message: string
+        }
+        Update: {
+          author_name?: string
+          created_at?: string
+          id?: string
+          message?: string
+        }
+        Relationships: []
+      }
+      invitation_settings: {
+        Row: {
+          dress_code: string | null
+          event_date: string | null
+          event_time: string | null
+          farewell_message: string
+          farewell_title: string
+          gallery_intro: string
+          guestbook_intro: string
+          headline: string
+          id: number
+          intro_message: string
+          intro_title: string
+          maps_url: string | null
+          name_one: string
+          name_two: string
+          rsvp_message: string
+          updated_at: string
+          venue_address: string | null
+          venue_name: string | null
+          year: string
+        }
+        Insert: {
+          dress_code?: string | null
+          event_date?: string | null
+          event_time?: string | null
+          farewell_message?: string
+          farewell_title?: string
+          gallery_intro?: string
+          guestbook_intro?: string
+          headline?: string
+          id?: number
+          intro_message?: string
+          intro_title?: string
+          maps_url?: string | null
+          name_one?: string
+          name_two?: string
+          rsvp_message?: string
+          updated_at?: string
+          venue_address?: string | null
+          venue_name?: string | null
+          year?: string
+        }
+        Update: {
+          dress_code?: string | null
+          event_date?: string | null
+          event_time?: string | null
+          farewell_message?: string
+          farewell_title?: string
+          gallery_intro?: string
+          guestbook_intro?: string
+          headline?: string
+          id?: number
+          intro_message?: string
+          intro_title?: string
+          maps_url?: string | null
+          name_one?: string
+          name_two?: string
+          rsvp_message?: string
+          updated_at?: string
+          venue_address?: string | null
+          venue_name?: string | null
+          year?: string
+        }
+        Relationships: []
+      }
+      photos: {
+        Row: {
+          created_at: string
+          id: string
+          status: string
+          storage_path: string
+          uploader_name: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          status?: string
+          storage_path: string
+          uploader_name?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          status?: string
+          storage_path?: string
+          uploader_name?: string | null
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +284,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin"],
+    },
   },
 } as const
