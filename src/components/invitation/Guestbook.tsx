@@ -19,13 +19,13 @@ export function Guestbook() {
     if (website) return;
     const n = name.trim();
     const m = message.trim();
-    if (!n || !m) return toast.error("Completá tu nombre y tu mensaje.");
+    if (!n || !m) return void toast.error("Completá tu nombre y tu mensaje.");
     const last = Number(localStorage.getItem("gb_last") ?? 0);
-    if (Date.now() - last < 30_000) return toast.error("Esperá unos segundos antes de enviar otro mensaje.");
+    if (Date.now() - last < 30_000) return void toast.error("Esperá unos segundos antes de enviar otro mensaje.");
     setSending(true);
     const { error } = await supabase.from("guest_messages").insert({ author_name: n, message: m });
     setSending(false);
-    if (error) return toast.error(error.message.includes("Demasiados") ? error.message : "No pudimos enviar tu mensaje. Intentá de nuevo.");
+    if (error) return void toast.error(error.message.includes("Demasiados") ? error.message : "No pudimos enviar tu mensaje. Intentá de nuevo.");
     localStorage.setItem("gb_last", String(Date.now()));
     setSent(true);
     setName("");
