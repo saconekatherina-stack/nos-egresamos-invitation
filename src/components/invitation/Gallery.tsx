@@ -2,7 +2,9 @@ import { useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { Camera, Loader2, ImagePlus, X, ChevronLeft, ChevronRight } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
+import { useServerFn } from "@tanstack/react-start";
+import { useQueryClient } from "@tanstack/react-query";
+import { uploadGuestPhoto } from "@/lib/photos.functions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
@@ -64,6 +66,7 @@ function Uploader() {
   const [files, setFiles] = useState<File[]>([]);
   const [name, setName] = useState("");
   const [progress, setProgress] = useState<string | null>(null);
+  const uploadFn = useServerFn(uploadGuestPhoto);
 
   function pick(list: FileList | null) {
     if (!list) return;
@@ -87,11 +90,11 @@ function Uploader() {
       for (let i = 0; i < files.length; i++) {
         setProgress(`Subiendo ${i + 1} de ${files.length}…`);
         const blob = await compressImage(files[i]!);
-        const path = `${crypto.randomUUID()}.jpg`;
-        const { error: upErr } = await supabase.storage.from("photos").upload(path, blob, { contentType: "image/jpeg", upsert: false });
-        if (upErr) throw new Error("No pudimos subir la foto.");
-        const { error } = await supabase.from("photos").insert({ storage_path: path, uploader_name: name.trim() || null });
-        if (error) throw new Error(error.message.includes("Probá") ? error.message : "No pudimos registrar la foto.");
+        const fd = new FormData();
+        fd.append("file", blob, "photo.jpg");
+        fd.append("name", name.trim());
+        const res = await uploadFn({ data: fd });
+        if (!res.ok) throw new Error(res.error);
         ok++;
       }
       toast.success(`¡Gracias! ${ok === 1 ? "Tu foto será publicada" : "Tus fotos serán publicadas"} después de ser revisada${ok === 1 ? "" : "s"}.`);
