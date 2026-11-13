@@ -1,6 +1,7 @@
 import { queryOptions } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import type { Tables } from "@/integrations/supabase/types";
+import { getApprovedPhotos } from "@/lib/photos.functions";
 
 export type InvitationSettings = Tables<"invitation_settings">;
 
@@ -23,24 +24,9 @@ export const settingsQuery = queryOptions({
 export const approvedPhotosQuery = queryOptions({
   queryKey: ["approved-photos"],
   queryFn: async () => {
-    const { data, error } = await supabase
-      .from("photos")
-      .select("id, storage_path, uploader_name, created_at")
-      .eq("status", "approved")
-      .order("created_at", { ascending: false })
-      .limit(300);
-    if (error) throw error;
-    if (!data.length) return [];
-    const { data: urls, error: urlErr } = await supabase.storage
-      .from("photos")
-      .createSignedUrls(
-        data.map((p) => p.storage_path),
-        60 * 60,
-      );
-    if (urlErr) throw urlErr;
-    return data
-      .map((p, i) => ({ ...p, url: urls?.[i]?.signedUrl ?? "" }))
-      .filter((p) => p.url);
+    const photos = await getApprovedPhotos();
+    // Signed links are built against the public backend address the browser can reach.
+    return photos.map(({ signedPath, ...p }) => ({ ...p, url: `${import.meta.env["VITE_SUPABASE_URL"]}${signedPath}` }));
   },
 });
 
