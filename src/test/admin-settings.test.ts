@@ -18,4 +18,10 @@ describe("admin settings save", () => {
     const { missing } = buildSettingsUpdate({ headline: " ", year: "2026" }, ["headline", "year"]);
     expect(missing).toEqual(["headline"]);
   });
+
+  it("lets the entry price and its phrase be edited or left empty", () => {
+    const { update, missing } = buildSettingsUpdate({ entry_price: "19.000", entry_note: "" }, ["entry_price", "entry_note"]);
+    expect(missing).toEqual([]);
+    expect(update).toEqual({ entry_price: "19.000", entry_note: null });
+  });
 });

@@ -1,0 +1,3 @@
+ALTER TABLE public.invitation_settings ADD COLUMN IF NOT EXISTS entry_price text DEFAULT '19.000';
+ALTER TABLE public.invitation_settings ADD COLUMN IF NOT EXISTS entry_note text DEFAULT '¡Todo está incluido! Vos solo tenés que venir a disfrutar.';
+UPDATE public.invitation_settings SET entry_price = '19.000', entry_note = '¡Todo está incluido! Vos solo tenés que venir a disfrutar.' WHERE entry_price IS NULL OR entry_note IS NULL;

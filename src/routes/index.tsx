@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
-import { CalendarDays, Clock, MapPin, Navigation, MessageCircle, ChevronDown, Shirt } from "lucide-react";
+import { CalendarDays, Clock, MapPin, Navigation, MessageCircle, ChevronDown, Shirt, Heart } from "lucide-react";
 import florals from "@/assets/florals.jpg";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -146,6 +146,21 @@ function EventInfo({ s }: { s: InvitationSettings }) {
             </Reveal>
           ))}
         </div>
+        {(s.entry_price || s.entry_note) && (
+          <Reveal className="mt-10 text-center" delay={150}>
+            {s.entry_price && (
+              <>
+                <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground">Valor del ingreso</p>
+                <p className="mt-2 inline-flex items-center gap-3 font-serif text-3xl">
+                  <Heart className="h-5 w-5 fill-current text-lilac" aria-hidden="true" />
+                  <span className="text-gradient">{s.entry_price}</span>
+                  <Heart className="h-5 w-5 fill-current text-lilac" aria-hidden="true" />
+                </p>
+              </>
+            )}
+            {s.entry_note && <p className="mx-auto mt-4 max-w-md text-sm text-muted-foreground">{s.entry_note}</p>}
+          </Reveal>
+        )}
         {s.dress_code && (
           <Reveal className="mt-6 text-center"><p className="inline-flex items-center gap-2 text-muted-foreground"><Shirt className="h-4 w-4" /> Dress code: <span className="font-medium text-foreground">{s.dress_code}</span></p></Reveal>
         )}
