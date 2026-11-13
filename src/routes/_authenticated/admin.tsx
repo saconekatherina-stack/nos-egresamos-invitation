@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { settingsQuery, type InvitationSettings } from "@/lib/invitation";
+import { settingsQuery, buildSettingsUpdate, type InvitationSettings } from "@/lib/invitation";
 
 export const Route = createFileRoute("/_authenticated/admin")({
   head: () => ({
@@ -112,12 +112,16 @@ function SettingsEditor() {
 
   async function save() {
     if (form.maps_url && !/^https:\/\//.test(form.maps_url)) return void toast.error("El enlace de Maps debe empezar con https://");
+    const fields = GROUPS.flatMap((g) => g.fields);
+    const { update, missing } = buildSettingsUpdate(form, fields.map((f) => f.key));
+    if (missing.length) {
+      const labels = missing.map((k) => fields.find((f) => f.key === k)?.label ?? k);
+      return void toast.error(`Completá: ${labels.join(", ")}`);
+    }
     setSaving(true);
-    const { id: _id, updated_at: _u, ...rest } = form as InvitationSettings;
-    const clean = Object.fromEntries(Object.entries(rest).map(([k, v]) => [k, typeof v === "string" && v.trim() === "" ? null : v]));
-    const { error } = await supabase.from("invitation_settings").update({ ...clean, updated_at: new Date().toISOString() }).eq("id", 1);
+    const { error } = await supabase.from("invitation_settings").update({ ...update, updated_at: new Date().toISOString() }).eq("id", 1);
     setSaving(false);
-    if (error) return void toast.error("No se pudo guardar. Revisá que los campos obligatorios no estén vacíos.");
+    if (error) return void toast.error("No se pudo guardar. Intentá de nuevo.");
     toast.success("Cambios guardados");
     qc.invalidateQueries({ queryKey: settingsQuery.queryKey });
   }
