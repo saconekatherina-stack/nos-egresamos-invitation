@@ -18,9 +18,18 @@ describe("WhatsApp RSVP", () => {
     expect(decode(buildWhatsAppLink("Ana", "1234567", "no", "Katherina"))).toContain("Respuesta: No podré asistir");
   });
 
-  it("requires a 7–8 digit DNI", () => {
+  it("validates a typed DNI", () => {
     expect(normalizeDni("40.123.456")).toBe("40123456");
     expect(normalizeDni("12345")).toBeNull();
     expect(normalizeDni("")).toBeNull();
+  });
+
+  it("sends the confirmation without a DNI when the guest leaves it empty", () => {
+    const url = buildWhatsAppLink("Lucía Pérez", "", "si", "Katherina");
+    expect(url.startsWith("https://wa.me/5492635013396?text=")).toBe(true);
+    const text = decode(url);
+    expect(text).toContain("Nombre y apellido: Lucía Pérez");
+    expect(text).toContain("Respuesta: Sí asistiré");
+    expect(text).not.toContain("DNI");
   });
 });
