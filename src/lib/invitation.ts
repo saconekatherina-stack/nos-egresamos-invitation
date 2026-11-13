@@ -25,11 +25,8 @@ export const approvedPhotosQuery = queryOptions({
   queryKey: ["approved-photos"],
   queryFn: async () => {
     const photos = await getApprovedPhotos();
-    const base = `${import.meta.env.VITE_SUPABASE_URL}/storage/v1`;
-    return photos.map(({ signedPath, ...p }) => ({
-      ...p,
-      url: signedPath.startsWith("/storage/v1") ? `${import.meta.env.VITE_SUPABASE_URL}${signedPath}` : `${base}${signedPath}`,
-    }));
+    // Signed links are built against the public backend address the browser can reach.
+    return photos.map(({ signedPath, ...p }) => ({ ...p, url: `${import.meta.env.VITE_SUPABASE_URL}${signedPath}` }));
   },
 });
 

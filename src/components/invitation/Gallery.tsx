@@ -3,7 +3,6 @@ import { useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { Camera, Loader2, ImagePlus, X, ChevronLeft, ChevronRight } from "lucide-react";
 import { useServerFn } from "@tanstack/react-start";
-import { useQueryClient } from "@tanstack/react-query";
 import { uploadGuestPhoto } from "@/lib/photos.functions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
