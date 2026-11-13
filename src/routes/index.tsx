@@ -6,18 +6,19 @@ import florals from "@/assets/florals.jpg";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Reveal, SectionTitle, Ornament } from "@/components/invitation/Reveal";
 import { Guestbook } from "@/components/invitation/Guestbook";
 import { Gallery } from "@/components/invitation/Gallery";
-import { settingsQuery, buildWhatsAppLink, type InvitationSettings } from "@/lib/invitation";
+import { settingsQuery, buildWhatsAppLink, normalizeDni, type InvitationSettings, type RsvpAnswer } from "@/lib/invitation";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Katherina & Naomi · ¡Nos egresamos! 2026" },
-      { name: "description", content: "Estás invitado a celebrar la graduación de Katherina & Naomi. Confirmá tu asistencia, dejanos un mensaje y compartí tus fotos." },
-      { property: "og:title", content: "Katherina & Naomi · ¡Nos egresamos! 2026" },
-      { property: "og:description", content: "Invitación a nuestra fiesta de egresadas. ¡Te esperamos!" },
+      { title: "Katherina · ¡Nos egresamos! 2026" },
+      { name: "description", content: "Estás invitado a celebrar la graduación de Katherina. Confirmá tu asistencia, dejanos un mensaje y compartí tus fotos." },
+      { property: "og:title", content: "Katherina · ¡Nos egresamos! 2026" },
+      { property: "og:description", content: "Invitación a mi fiesta de egresada. ¡Te espero!" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -25,7 +26,7 @@ export const Route = createFileRoute("/")({
   component: Invitation,
 });
 
-const FALLBACK: Partial<InvitationSettings> = { name_one: "Katherina", name_two: "Naomi", headline: "¡Nos egresamos!", year: "2026" };
+const FALLBACK: Partial<InvitationSettings> = { name_one: "Katherina", headline: "¡Nos egresamos!", year: "2026" };
 
 function Invitation() {
   const { data } = useQuery(settingsQuery);
@@ -45,7 +46,7 @@ function Invitation() {
           <Intro s={s} />
           <EventInfo s={s} />
           <Rsvp s={s} />
-          <Section id="mensajes" eyebrow="Libro de mensajes" title="Unas palabras para nosotras" intro={s.guestbook_intro}>
+          <Section id="mensajes" eyebrow="Libro de mensajes" title="Unas palabras para mí" intro={s.guestbook_intro}>
             <Guestbook />
           </Section>
           <Section id="galeria" eyebrow="Galería" title="Momentos compartidos" intro={s.gallery_intro} wide>
@@ -76,9 +77,7 @@ function Cover({ s, onOpen, opened }: { s: InvitationSettings; onOpen: () => voi
       <div className="relative z-10 max-w-xl text-center">
         <p className="animate-rise text-xs uppercase tracking-[0.5em] text-muted-foreground" style={{ animationDelay: "0.2s" }}>Promoción {s.year}</p>
         <h1 className="mt-6 leading-none">
-          <span className="block animate-rise font-serif text-6xl font-medium text-gradient sm:text-8xl" style={{ animationDelay: "0.5s" }}>{s.name_one}</span>
-          <span className="my-2 block animate-rise font-script text-5xl text-lilac sm:text-6xl" style={{ animationDelay: "0.9s" }}>&amp;</span>
-          <span className="block animate-rise font-serif text-6xl font-medium text-gradient sm:text-8xl" style={{ animationDelay: "1.2s" }}>{s.name_two}</span>
+          <span className="block animate-rise text-center font-serif text-6xl font-medium text-gradient sm:text-8xl" style={{ animationDelay: "0.5s" }}>{s.name_one}</span>
         </h1>
         <div className="animate-rise" style={{ animationDelay: "1.6s" }}><Ornament /></div>
         <p className="animate-rise font-script text-4xl text-primary sm:text-5xl" style={{ animationDelay: "1.9s" }}>{s.headline}</p>
@@ -166,21 +165,50 @@ function EventInfo({ s }: { s: InvitationSettings }) {
 
 function Rsvp({ s }: { s: InvitationSettings }) {
   const [name, setName] = useState("");
-  const [guests, setGuests] = useState(1);
-  const valid = name.trim().length >= 2;
+  const [dni, setDni] = useState("");
+  const [answer, setAnswer] = useState<RsvpAnswer | "">("");
+  const [touched, setTouched] = useState(false);
+  const nameOk = name.trim().length >= 2;
+  const cleanDni = normalizeDni(dni);
+  const valid = nameOk && !!cleanDni && answer !== "";
   return (
     <Section id="confirmar" eyebrow="Confirmación" title="¿Nos acompañás?" intro={s.rsvp_message}>
-      <form className="glass-card space-y-4 p-6 sm:p-8" onSubmit={(e) => { e.preventDefault(); if (valid) window.open(buildWhatsAppLink(name, guests, `${s.name_one} & ${s.name_two}`), "_blank", "noopener"); }}>
+      <form
+        className="glass-card space-y-4 p-6 sm:p-8"
+        noValidate
+        onSubmit={(e) => {
+          e.preventDefault();
+          setTouched(true);
+          if (!valid || !cleanDni || !answer) return;
+          window.open(buildWhatsAppLink(name, cleanDni, answer, s.name_one), "_blank", "noopener");
+        }}
+      >
         <div className="space-y-2">
           <Label htmlFor="rsvp-name">Nombre y apellido</Label>
-          <Input id="rsvp-name" value={name} maxLength={80} onChange={(e) => setName(e.target.value)} placeholder="¿Cómo te llamás?" />
+          <Input id="rsvp-name" value={name} maxLength={80} required autoComplete="name" onChange={(e) => setName(e.target.value)} placeholder="¿Cómo te llamás?" />
+          {touched && !nameOk && <p className="text-sm text-destructive">Ingresá tu nombre y apellido.</p>}
         </div>
         <div className="space-y-2">
-          <Label htmlFor="rsvp-guests">Cantidad de personas</Label>
-          <Input id="rsvp-guests" type="number" min={1} max={10} value={guests} onChange={(e) => setGuests(Math.max(1, Math.min(10, Number(e.target.value) || 1)))} />
+          <Label htmlFor="rsvp-dni">DNI</Label>
+          <Input id="rsvp-dni" value={dni} inputMode="numeric" maxLength={12} required autoComplete="off" onChange={(e) => setDni(e.target.value)} placeholder="Ej: 40123456" />
+          {touched && !cleanDni && <p className="text-sm text-destructive">Ingresá un DNI válido (7 u 8 números).</p>}
         </div>
-        <Button type="submit" size="lg" className="w-full rounded-full" disabled={!valid}>
-          <MessageCircle /> Confirmar por WhatsApp
+        <div className="space-y-2">
+          <Label>Confirmación</Label>
+          <RadioGroup value={answer} onValueChange={(v) => setAnswer(v as RsvpAnswer)} className="gap-3" aria-required="true">
+            <div className="flex items-center gap-2">
+              <RadioGroupItem value="si" id="rsvp-si" />
+              <Label htmlFor="rsvp-si" className="font-normal">Sí asistiré</Label>
+            </div>
+            <div className="flex items-center gap-2">
+              <RadioGroupItem value="no" id="rsvp-no" />
+              <Label htmlFor="rsvp-no" className="font-normal">No podré asistir</Label>
+            </div>
+          </RadioGroup>
+          {touched && answer === "" && <p className="text-sm text-destructive">Elegí una opción.</p>}
+        </div>
+        <Button type="submit" size="lg" className="w-full rounded-full">
+          <MessageCircle /> Confirmar asistencia
         </Button>
       </form>
     </Section>
@@ -195,7 +223,7 @@ function Farewell({ s }: { s: InvitationSettings }) {
         <p className="font-script text-6xl text-primary sm:text-7xl">{s.farewell_title}</p>
         <Ornament />
         <p className="whitespace-pre-line font-serif text-2xl leading-relaxed sm:text-3xl">{s.farewell_message}</p>
-        <p className="mt-10 font-serif text-xl tracking-[0.2em] text-gradient">{s.name_one} &amp; {s.name_two} · {s.year}</p>
+        <p className="mt-10 font-serif text-xl tracking-[0.2em] text-gradient">{s.name_one} · {s.year}</p>
       </Reveal>
       <Link to="/admin" className="relative mt-16 inline-block text-[10px] uppercase tracking-[0.3em] text-muted-foreground/50 hover:text-muted-foreground">Administración</Link>
     </section>

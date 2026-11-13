@@ -11,7 +11,7 @@ import { Label } from "@/components/ui/label";
 export const Route = createFileRoute("/auth")({
   head: () => ({
     meta: [
-      { title: "Acceso administradoras · Katherina & Naomi" },
+      { title: "Acceso administradoras · Katherina" },
       { name: "description", content: "Acceso privado al panel de la invitación." },
       { property: "og:title", content: "Acceso administradoras" },
       { property: "og:description", content: "Acceso privado al panel de la invitación." },

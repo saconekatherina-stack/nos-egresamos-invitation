@@ -14,7 +14,7 @@ import { settingsQuery, type InvitationSettings } from "@/lib/invitation";
 export const Route = createFileRoute("/_authenticated/admin")({
   head: () => ({
     meta: [
-      { title: "Panel de administración · Katherina & Naomi" },
+      { title: "Panel de administración · Katherina" },
       { name: "description", content: "Panel privado de la invitación." },
       { property: "og:title", content: "Panel de administración" },
       { property: "og:description", content: "Panel privado de la invitación." },
@@ -85,7 +85,7 @@ function AdminPage() {
 type Field = { key: keyof InvitationSettings; label: string; long?: boolean; placeholder?: string };
 const GROUPS: { title: string; fields: Field[] }[] = [
   { title: "Portada", fields: [
-    { key: "name_one", label: "Primer nombre" }, { key: "name_two", label: "Segundo nombre" },
+    { key: "name_one", label: "Nombre" },
     { key: "headline", label: "Frase principal" }, { key: "year", label: "Año" } ] },
   { title: "Presentación", fields: [
     { key: "intro_title", label: "Título" }, { key: "intro_message", label: "Mensaje de invitación", long: true } ] },

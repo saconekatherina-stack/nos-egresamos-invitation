@@ -44,10 +44,19 @@ export const approvedPhotosQuery = queryOptions({
   },
 });
 
-export function buildWhatsAppLink(guestName: string, guests: number, coupleNames: string) {
+export type RsvpAnswer = "si" | "no";
+
+/** Normalizes a DNI: keeps only digits. Returns null if it isn't 7–8 digits. */
+export function normalizeDni(raw: string): string | null {
+  const digits = raw.replace(/\D/g, "");
+  return /^\d{7,8}$/.test(digits) ? digits : null;
+}
+
+/** Builds the WhatsApp RSVP link. Nothing is stored: the data only travels in the WhatsApp message. */
+export function buildWhatsAppLink(guestName: string, dni: string, answer: RsvpAnswer, honoreeName: string) {
   const name = guestName.trim();
-  const extra = guests > 1 ? ` Seremos ${guests} personas.` : "";
-  const text = `¡Hola! Soy ${name} y confirmo mi asistencia a la fiesta de egresadas de ${coupleNames}.${extra} 💜`;
+  const response = answer === "si" ? "Sí asistiré" : "No podré asistir";
+  const text = `¡Hola! Confirmación de asistencia a la fiesta de egresada de ${honoreeName}.\nNombre y apellido: ${name}\nDNI: ${dni}\nRespuesta: ${response}`;
   return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(text)}`;
 }
 

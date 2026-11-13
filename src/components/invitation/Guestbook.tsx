@@ -58,7 +58,7 @@ export function Guestbook() {
         {sending ? <Loader2 className="animate-spin" /> : <Send />} Enviar mensaje
       </Button>
       <p className="flex items-center justify-center gap-2 text-xs text-muted-foreground">
-        <Lock className="h-3 w-3" /> Solo Katherina y Naomi podrán leerlo.
+        <Lock className="h-3 w-3" /> Solo Katherina podrá leerlo.
       </p>
     </form>
   );
