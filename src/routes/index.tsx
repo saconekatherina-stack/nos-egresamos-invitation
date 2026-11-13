@@ -14,10 +14,10 @@ import { settingsQuery, buildWhatsAppLink, type InvitationSettings } from "@/lib
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Katherina & Naomi · ¡Nos egresamos! 2026" },
-      { name: "description", content: "Estás invitado a celebrar la graduación de Katherina & Naomi. Confirmá tu asistencia, dejanos un mensaje y compartí tus fotos." },
-      { property: "og:title", content: "Katherina & Naomi · ¡Nos egresamos! 2026" },
-      { property: "og:description", content: "Invitación a nuestra fiesta de egresadas. ¡Te esperamos!" },
+      { title: "Katherina · ¡Nos egresamos! 2026" },
+      { name: "description", content: "Estás invitado a celebrar la graduación de Katherina. Confirmá tu asistencia, dejanos un mensaje y compartí tus fotos." },
+      { property: "og:title", content: "Katherina · ¡Nos egresamos! 2026" },
+      { property: "og:description", content: "Invitación a mi fiesta de egresada. ¡Te espero!" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -25,7 +25,7 @@ export const Route = createFileRoute("/")({
   component: Invitation,
 });
 
-const FALLBACK: Partial<InvitationSettings> = { name_one: "Katherina", name_two: "Naomi", headline: "¡Nos egresamos!", year: "2026" };
+const FALLBACK: Partial<InvitationSettings> = { name_one: "Katherina", headline: "¡Nos egresamos!", year: "2026" };
 
 function Invitation() {
   const { data } = useQuery(settingsQuery);
@@ -45,7 +45,7 @@ function Invitation() {
           <Intro s={s} />
           <EventInfo s={s} />
           <Rsvp s={s} />
-          <Section id="mensajes" eyebrow="Libro de mensajes" title="Unas palabras para nosotras" intro={s.guestbook_intro}>
+          <Section id="mensajes" eyebrow="Libro de mensajes" title="Unas palabras para mí" intro={s.guestbook_intro}>
             <Guestbook />
           </Section>
           <Section id="galeria" eyebrow="Galería" title="Momentos compartidos" intro={s.gallery_intro} wide>
@@ -76,9 +76,7 @@ function Cover({ s, onOpen, opened }: { s: InvitationSettings; onOpen: () => voi
       <div className="relative z-10 max-w-xl text-center">
         <p className="animate-rise text-xs uppercase tracking-[0.5em] text-muted-foreground" style={{ animationDelay: "0.2s" }}>Promoción {s.year}</p>
         <h1 className="mt-6 leading-none">
-          <span className="block animate-rise font-serif text-6xl font-medium text-gradient sm:text-8xl" style={{ animationDelay: "0.5s" }}>{s.name_one}</span>
-          <span className="my-2 block animate-rise font-script text-5xl text-lilac sm:text-6xl" style={{ animationDelay: "0.9s" }}>&amp;</span>
-          <span className="block animate-rise font-serif text-6xl font-medium text-gradient sm:text-8xl" style={{ animationDelay: "1.2s" }}>{s.name_two}</span>
+          <span className="block animate-rise text-center font-serif text-6xl font-medium text-gradient sm:text-8xl" style={{ animationDelay: "0.5s" }}>{s.name_one}</span>
         </h1>
         <div className="animate-rise" style={{ animationDelay: "1.6s" }}><Ornament /></div>
         <p className="animate-rise font-script text-4xl text-primary sm:text-5xl" style={{ animationDelay: "1.9s" }}>{s.headline}</p>
@@ -195,7 +193,7 @@ function Farewell({ s }: { s: InvitationSettings }) {
         <p className="font-script text-6xl text-primary sm:text-7xl">{s.farewell_title}</p>
         <Ornament />
         <p className="whitespace-pre-line font-serif text-2xl leading-relaxed sm:text-3xl">{s.farewell_message}</p>
-        <p className="mt-10 font-serif text-xl tracking-[0.2em] text-gradient">{s.name_one} &amp; {s.name_two} · {s.year}</p>
+        <p className="mt-10 font-serif text-xl tracking-[0.2em] text-gradient">{s.name_one} · {s.year}</p>
       </Reveal>
       <Link to="/admin" className="relative mt-16 inline-block text-[10px] uppercase tracking-[0.3em] text-muted-foreground/50 hover:text-muted-foreground">Administración</Link>
     </section>

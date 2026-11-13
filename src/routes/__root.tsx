@@ -79,8 +79,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Katherina & Naomi · ¡Nos egresamos! 2026" },
-      { name: "description", content: "Invitación a la fiesta de egresadas de Katherina & Naomi 2026." },
+      { title: "Katherina · ¡Nos egresamos! 2026" },
+      { name: "description", content: "Invitación a la fiesta de egresada de Katherina 2026." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
