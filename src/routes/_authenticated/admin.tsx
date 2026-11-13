@@ -94,7 +94,9 @@ const GROUPS: { title: string; fields: Field[] }[] = [
     { key: "event_time", label: "Horario", placeholder: "21:30 hs" },
     { key: "venue_name", label: "Salón o lugar" }, { key: "venue_address", label: "Dirección" },
     { key: "maps_url", label: "Enlace de Google Maps", placeholder: "https://maps.app.goo.gl/…" },
-    { key: "dress_code", label: "Dress code (opcional)" } ] },
+    { key: "dress_code", label: "Dress code (opcional)" },
+    { key: "entry_price", label: "Valor del ingreso (opcional)", placeholder: "19.000" },
+    { key: "entry_note", label: "Frase debajo del valor (opcional)" } ] },
   { title: "Textos de secciones", fields: [
     { key: "rsvp_message", label: "Confirmación de asistencia", long: true },
     { key: "guestbook_intro", label: "Libro de mensajes", long: true },

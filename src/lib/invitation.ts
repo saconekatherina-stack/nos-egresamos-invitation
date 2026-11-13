@@ -69,7 +69,7 @@ export async function compressImage(file: File): Promise<Blob> {
 }
 
 /** Event details that may stay empty until they're configured. */
-export const OPTIONAL_SETTINGS_FIELDS = ["event_date", "event_time", "venue_name", "venue_address", "maps_url", "dress_code"] as const;
+export const OPTIONAL_SETTINGS_FIELDS = ["event_date", "event_time", "venue_name", "venue_address", "maps_url", "dress_code", "entry_price", "entry_note"] as const;
 
 /**
  * Builds the update for the admin panel from only the fields it edits.
