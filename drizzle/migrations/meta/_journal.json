@@ -15,6 +15,13 @@
       "when": 1794533432174,
       "tag": "0001_tighten_guestbook_and_photo_storage",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1794535833184,
+      "tag": "0002_add_entry_price",
+      "breakpoints": true
     }
   ]
 }

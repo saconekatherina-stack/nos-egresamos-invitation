@@ -38,6 +38,8 @@ export type Database = {
       invitation_settings: {
         Row: {
           dress_code: string | null
+          entry_note: string | null
+          entry_price: string | null
           event_date: string | null
           event_time: string | null
           farewell_message: string
@@ -59,6 +61,8 @@ export type Database = {
         }
         Insert: {
           dress_code?: string | null
+          entry_note?: string | null
+          entry_price?: string | null
           event_date?: string | null
           event_time?: string | null
           farewell_message?: string
@@ -80,6 +84,8 @@ export type Database = {
         }
         Update: {
           dress_code?: string | null
+          entry_note?: string | null
+          entry_price?: string | null
           event_date?: string | null
           event_time?: string | null
           farewell_message?: string
