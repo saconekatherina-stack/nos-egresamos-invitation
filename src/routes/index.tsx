@@ -6,10 +6,11 @@ import florals from "@/assets/florals.jpg";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Reveal, SectionTitle, Ornament } from "@/components/invitation/Reveal";
 import { Guestbook } from "@/components/invitation/Guestbook";
 import { Gallery } from "@/components/invitation/Gallery";
-import { settingsQuery, buildWhatsAppLink, type InvitationSettings } from "@/lib/invitation";
+import { settingsQuery, buildWhatsAppLink, normalizeDni, type InvitationSettings, type RsvpAnswer } from "@/lib/invitation";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -164,21 +165,50 @@ function EventInfo({ s }: { s: InvitationSettings }) {
 
 function Rsvp({ s }: { s: InvitationSettings }) {
   const [name, setName] = useState("");
-  const [guests, setGuests] = useState(1);
-  const valid = name.trim().length >= 2;
+  const [dni, setDni] = useState("");
+  const [answer, setAnswer] = useState<RsvpAnswer | "">("");
+  const [touched, setTouched] = useState(false);
+  const nameOk = name.trim().length >= 2;
+  const cleanDni = normalizeDni(dni);
+  const valid = nameOk && !!cleanDni && answer !== "";
   return (
     <Section id="confirmar" eyebrow="Confirmación" title="¿Nos acompañás?" intro={s.rsvp_message}>
-      <form className="glass-card space-y-4 p-6 sm:p-8" onSubmit={(e) => { e.preventDefault(); if (valid) window.open(buildWhatsAppLink(name, guests, `${s.name_one} & ${s.name_two}`), "_blank", "noopener"); }}>
+      <form
+        className="glass-card space-y-4 p-6 sm:p-8"
+        noValidate
+        onSubmit={(e) => {
+          e.preventDefault();
+          setTouched(true);
+          if (!valid || !cleanDni || !answer) return;
+          window.open(buildWhatsAppLink(name, cleanDni, answer, s.name_one), "_blank", "noopener");
+        }}
+      >
         <div className="space-y-2">
           <Label htmlFor="rsvp-name">Nombre y apellido</Label>
-          <Input id="rsvp-name" value={name} maxLength={80} onChange={(e) => setName(e.target.value)} placeholder="¿Cómo te llamás?" />
+          <Input id="rsvp-name" value={name} maxLength={80} required autoComplete="name" onChange={(e) => setName(e.target.value)} placeholder="¿Cómo te llamás?" />
+          {touched && !nameOk && <p className="text-sm text-destructive">Ingresá tu nombre y apellido.</p>}
         </div>
         <div className="space-y-2">
-          <Label htmlFor="rsvp-guests">Cantidad de personas</Label>
-          <Input id="rsvp-guests" type="number" min={1} max={10} value={guests} onChange={(e) => setGuests(Math.max(1, Math.min(10, Number(e.target.value) || 1)))} />
+          <Label htmlFor="rsvp-dni">DNI</Label>
+          <Input id="rsvp-dni" value={dni} inputMode="numeric" maxLength={12} required autoComplete="off" onChange={(e) => setDni(e.target.value)} placeholder="Ej: 40123456" />
+          {touched && !cleanDni && <p className="text-sm text-destructive">Ingresá un DNI válido (7 u 8 números).</p>}
         </div>
-        <Button type="submit" size="lg" className="w-full rounded-full" disabled={!valid}>
-          <MessageCircle /> Confirmar por WhatsApp
+        <div className="space-y-2">
+          <Label>Confirmación</Label>
+          <RadioGroup value={answer} onValueChange={(v) => setAnswer(v as RsvpAnswer)} className="gap-3" aria-required="true">
+            <div className="flex items-center gap-2">
+              <RadioGroupItem value="si" id="rsvp-si" />
+              <Label htmlFor="rsvp-si" className="font-normal">Sí asistiré</Label>
+            </div>
+            <div className="flex items-center gap-2">
+              <RadioGroupItem value="no" id="rsvp-no" />
+              <Label htmlFor="rsvp-no" className="font-normal">No podré asistir</Label>
+            </div>
+          </RadioGroup>
+          {touched && answer === "" && <p className="text-sm text-destructive">Elegí una opción.</p>}
+        </div>
+        <Button type="submit" size="lg" className="w-full rounded-full">
+          <MessageCircle /> Confirmar asistencia
         </Button>
       </form>
     </Section>
