@@ -56,7 +56,7 @@ export function normalizeDni(raw: string): string | null {
 export function buildWhatsAppLink(guestName: string, dni: string, answer: RsvpAnswer, honoreeName: string) {
   const name = guestName.trim();
   const response = answer === "si" ? "Sí asistiré" : "No podré asistir";
-  const text = `¡Hola! Confirmación de asistencia a la fiesta de egresada de ${honoreeName}.\nNombre y apellido: ${name}\nDNI: ${dni}\nRespuesta: ${response} 💜`;
+  const text = `¡Hola! Confirmación de asistencia a la fiesta de egresada de ${honoreeName}.\nNombre y apellido: ${name}\nDNI: ${dni}\nRespuesta: ${response}`;
   return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(text)}`;
 }
 
