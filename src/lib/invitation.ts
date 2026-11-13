@@ -38,12 +38,17 @@ export function normalizeDni(raw: string): string | null {
   return /^\d{7,8}$/.test(digits) ? digits : null;
 }
 
-/** Builds the WhatsApp RSVP link. Nothing is stored: the data only travels in the WhatsApp message. */
+/** Builds the WhatsApp RSVP link. The DNI is optional: when it's left empty, that line is simply omitted. Nothing is stored: the data only travels in the WhatsApp message. */
 export function buildWhatsAppLink(guestName: string, dni: string, answer: RsvpAnswer, honoreeName: string) {
   const name = guestName.trim();
   const response = answer === "si" ? "Sí asistiré" : "No podré asistir";
-  const text = `¡Hola! Confirmación de asistencia a la fiesta de egresada de ${honoreeName}.\nNombre y apellido: ${name}\nDNI: ${dni}\nRespuesta: ${response}`;
-  return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(text)}`;
+  const lines = [
+    `¡Hola! Confirmación de asistencia a la fiesta de egresada de ${honoreeName}.`,
+    `Nombre y apellido: ${name}`,
+  ];
+  if (dni.trim() !== "") lines.push(`DNI: ${dni.trim()}`);
+  lines.push(`Respuesta: ${response}`);
+  return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(lines.join("\n"))}`;
 }
 
 export const ALLOWED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp", "image/heic", "image/heif"];
