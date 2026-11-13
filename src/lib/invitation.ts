@@ -67,3 +67,27 @@ export async function compressImage(file: File): Promise<Blob> {
   if (blob.size > 7.5 * 1024 * 1024) throw new Error("La imagen es demasiado pesada.");
   return blob;
 }
+
+/** Event details that may stay empty until they're configured. */
+export const OPTIONAL_SETTINGS_FIELDS = ["event_date", "event_time", "venue_name", "venue_address", "maps_url", "dress_code"] as const;
+
+/**
+ * Builds the update for the admin panel from only the fields it edits.
+ * Empty optional fields are cleared; empty required fields are reported instead of sent.
+ */
+export function buildSettingsUpdate(form: Partial<InvitationSettings>, editableKeys: (keyof InvitationSettings)[]) {
+  const optional = new Set<string>(OPTIONAL_SETTINGS_FIELDS);
+  const update: Record<string, string | null> = {};
+  const missing: (keyof InvitationSettings)[] = [];
+  for (const key of editableKeys) {
+    const raw = form[key];
+    const value = typeof raw === "string" ? raw : raw == null ? "" : String(raw);
+    if (value.trim() === "") {
+      if (optional.has(key)) update[key] = null;
+      else missing.push(key);
+    } else {
+      update[key] = value;
+    }
+  }
+  return { update, missing };
+}
