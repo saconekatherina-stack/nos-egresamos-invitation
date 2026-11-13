@@ -185,7 +185,8 @@ function Rsvp({ s }: { s: InvitationSettings }) {
   const [touched, setTouched] = useState(false);
   const nameOk = name.trim().length >= 2;
   const cleanDni = normalizeDni(dni);
-  const valid = nameOk && !!cleanDni && answer !== "";
+  const dniOk = dni.trim() === "" || !!cleanDni;
+  const valid = nameOk && dniOk && answer !== "";
   return (
     <Section id="confirmar" eyebrow="Confirmación" title="¿Nos acompañás?" intro={s.rsvp_message}>
       <form
@@ -194,8 +195,8 @@ function Rsvp({ s }: { s: InvitationSettings }) {
         onSubmit={(e) => {
           e.preventDefault();
           setTouched(true);
-          if (!valid || !cleanDni || !answer) return;
-          window.open(buildWhatsAppLink(name, cleanDni, answer, s.name_one), "_blank", "noopener");
+          if (!valid || !answer) return;
+          window.open(buildWhatsAppLink(name, cleanDni ?? "", answer, s.name_one), "_blank", "noopener");
         }}
       >
         <div className="space-y-2">
@@ -204,9 +205,9 @@ function Rsvp({ s }: { s: InvitationSettings }) {
           {touched && !nameOk && <p className="text-sm text-destructive">Ingresá tu nombre y apellido.</p>}
         </div>
         <div className="space-y-2">
-          <Label htmlFor="rsvp-dni">DNI</Label>
-          <Input id="rsvp-dni" value={dni} inputMode="numeric" maxLength={12} required autoComplete="off" onChange={(e) => setDni(e.target.value)} placeholder="Ej: 40123456" />
-          {touched && !cleanDni && <p className="text-sm text-destructive">Ingresá un DNI válido (7 u 8 números).</p>}
+          <Label htmlFor="rsvp-dni">DNI (opcional)</Label>
+          <Input id="rsvp-dni" value={dni} inputMode="numeric" maxLength={12} autoComplete="off" onChange={(e) => setDni(e.target.value)} placeholder="Ej: 40123456" />
+          {touched && dni.trim() !== "" && !cleanDni && <p className="text-sm text-destructive">Ingresá un DNI válido (7 u 8 números).</p>}
         </div>
         <div className="space-y-2">
           <Label>Confirmación</Label>
